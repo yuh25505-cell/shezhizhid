@@ -37,26 +37,38 @@
 <body>
 <div aria-hidden="true" class="wallpaper"></div>
 <div aria-hidden="true" class="boot" id="boot">
-<div class="boot-stage">
-<div class="boot-grid"></div>
-<div class="boot-orbit-wrap"><div class="boot-orbit"><span class="boot-orbit-node"></span></div><div class="boot-orbit-inner"></div></div>
-<div class="boot-corner boot-corner--left"><span>DY / 01</span><span>岛屿</span></div>
-<div class="boot-corner boot-corner--right"><span>AI-NATIVE</span><span>PERSONAL DEVICE</span></div>
-<div class="boot-core">
-<div class="boot-kicker"><span class="boot-kicker-line"></span><span>YOUR PERSONAL UNIVERSE</span><span class="boot-kicker-line"></span></div>
-<div class="boot-wordmark" aria-label="岛屿"><span class="boot-glyph"><span>岛</span></span><span class="boot-glyph"><span>屿</span></span></div>
-<div class="boot-wordmark-rule"><span></span></div>
-<div class="boot-latin"><span>DAOYU</span><i></i><span>AI-NATIVE POCKET WORLD</span></div>
-<p class="boot-tagline">把日常，变成你的宇宙。</p>
-<p class="boot-tagline-en">A LITTLE WORLD, ENTIRELY YOURS.</p>
-</div>
-<div class="boot-footer">
-<div class="boot-status-row"><div class="boot-status"><span class="boot-status-pulse"></span><span>正在唤醒你的岛屿</span></div><span class="boot-status-code">INITIALIZING&nbsp; / &nbsp;001</span></div>
-<div class="boot-progress-track"><span class="boot-progress-value"></span><span class="boot-progress-light"></span></div>
-<div class="boot-footer-bottom"><span>PRIVATE BY DESIGN</span><span>ONE WORLD / IN YOUR POCKET</span></div>
-</div>
-<div class="boot-side-note">MAKE ROOM FOR WONDER</div>
-</div>
+  <canvas class="boot-canvas" id="bootCanvas"></canvas>
+  <div class="boot-sweep boot-sweep--one"></div>
+  <div class="boot-sweep boot-sweep--two"></div>
+  <div class="boot-topline">
+    <div class="boot-signature"><span class="boot-slashes"><i></i><i></i><i></i></span><span>DAOYU</span><span class="boot-signature-sep">/</span><span>PERSONAL AI</span></div>
+    <div class="boot-live"><span class="boot-live-dot"></span><span>IN MOTION</span><span class="boot-live-index" id="bootLiveIndex">001</span></div>
+  </div>
+  <div class="boot-fragments" aria-hidden="true">
+    <span class="boot-fragment boot-fragment--a" data-float="0">IDEAS, UNPACKED</span>
+    <span class="boot-fragment boot-fragment--b" data-float="1">THINK / FEEL / MAKE</span>
+    <span class="boot-fragment boot-fragment--c" data-float="2">MEMORY IS A MATERIAL</span>
+    <span class="boot-fragment boot-fragment--d" data-float="3">A LITTLE UNEXPECTED</span>
+    <span class="boot-fragment boot-fragment--e" data-float="4">DAY&nbsp;—&nbsp;001</span>
+    <span class="boot-fragment boot-fragment--f" data-float="5">ROOM FOR POSSIBILITY</span>
+    <span class="boot-fragment boot-fragment--g" data-float="6">LIFE / SOUND / STORY</span>
+    <span class="boot-fragment boot-fragment--h" data-float="7">MADE TO MOVE WITH YOU</span>
+    <span class="boot-fragment boot-fragment--i" data-float="8">MORE THAN ONE THING</span>
+    <span class="boot-fragment boot-fragment--j" data-float="9">ALWAYS BECOMING</span>
+  </div>
+  <div class="boot-marquee boot-marquee--upper" aria-hidden="true"><div class="boot-marquee-track"><span>THINK&nbsp; CLEARLY&nbsp; /&nbsp; FEEL&nbsp; DEEPLY&nbsp; /&nbsp; MAKE&nbsp; SOMETHING&nbsp; /&nbsp; KEEP&nbsp; THE&nbsp; MOMENT&nbsp; /&nbsp; </span><span>THINK&nbsp; CLEARLY&nbsp; /&nbsp; FEEL&nbsp; DEEPLY&nbsp; /&nbsp; MAKE&nbsp; SOMETHING&nbsp; /&nbsp; KEEP&nbsp; THE&nbsp; MOMENT&nbsp; /&nbsp; </span></div></div>
+  <div class="boot-center">
+    <div class="boot-center-kicker"><span></span>YOUR WORLD, STILL UNFOLDING<span></span></div>
+    <div class="boot-kinetic-word" id="bootKineticWord"><span>T</span><span>H</span><span>I</span><span>N</span><span>K</span></div>
+    <div class="boot-center-caption"><span>PERSONAL BY NATURE</span><i></i><span>OPEN TO WHAT'S NEXT</span></div>
+  </div>
+  <div class="boot-marquee boot-marquee--lower" aria-hidden="true"><div class="boot-marquee-track"><span>YOUR&nbsp; DAY,&nbsp; YOUR&nbsp; RHYTHM&nbsp; /&nbsp; A&nbsp; PLACE&nbsp; FOR&nbsp; EVERY&nbsp; VERSION&nbsp; OF&nbsp; YOU&nbsp; /&nbsp; </span><span>YOUR&nbsp; DAY,&nbsp; YOUR&nbsp; RHYTHM&nbsp; /&nbsp; A&nbsp; PLACE&nbsp; FOR&nbsp; EVERY&nbsp; VERSION&nbsp; OF&nbsp; YOU&nbsp; /&nbsp; </span></div></div>
+  <div class="boot-bottomline">
+    <div class="boot-loading-copy"><span class="boot-loading-dot"></span><span id="bootLoadingText">TUNING INTO YOUR WORLD</span></div>
+    <span class="boot-percent" id="bootPercent">00%</span>
+    <div class="boot-progress-track"><span class="boot-progress-fill" id="bootProgressFill"></span><span class="boot-progress-glint"></span></div>
+    <div class="boot-footer-meta"><span>SMALL DEVICE. WIDE OPEN WORLD.</span><span>DAOYU&nbsp; /&nbsp; 2026</span></div>
+  </div>
 </div>
 <main class="home" id="home">
 <section class="home-body">

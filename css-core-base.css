@@ -171,173 +171,128 @@ ul{ list-style:none; margin:0; padding:0; }
 
 h1,h2,h3,p{ margin:0; font-weight:inherit; }
 
-/* 启动层 · DAOYU 动态字标
- * 黑白编辑式排版、逐字揭幕、环形细线与底部扫描进度；网页和 APK 共用同一套实现。 */
+/* 全屏启动场 · 动态排版、流体线场与触摸扰动。无中心徽标、无环形主视觉。 */
 .boot{
-  --boot-shift-x:0px; --boot-shift-y:0px;
-  --boot-content-shift-x:0px; --boot-content-shift-y:0px;
-  --boot-line:var(--home-border-strong);
+  --boot-field:var(--fg);
+  --boot-paper:var(--bg-pure);
   position:fixed; inset:0; z-index:100; overflow:hidden;
-  background:var(--bg-pure); color:var(--fg);
+  color:var(--fg); background:var(--boot-paper);
   font-family:"SF Pro Display","Helvetica Neue","PingFang SC","Noto Sans CJK SC",sans-serif;
-  isolation:isolate;
-  animation:bootLeave .7s 2.45s cubic-bezier(.4,0,.2,1) forwards;
+  isolation:isolate; touch-action:none;
+  animation:bootLeave .68s 2.55s cubic-bezier(.2,.72,.22,1) forwards;
   will-change:opacity;
 }
-.boot-stage{
-  position:relative; width:100%; height:100%; min-height:100%; overflow:hidden;
-  display:flex; align-items:center; justify-content:center;
-  animation:bootStageLeave .7s 2.45s cubic-bezier(.4,0,.2,1) forwards;
-}
-.boot-grid{
-  position:absolute; inset:0; pointer-events:none; opacity:0;
-  background-image:linear-gradient(var(--home-border) 1px,transparent 1px),linear-gradient(90deg,var(--home-border) 1px,transparent 1px);
-  background-size:clamp(42px,7vw,76px) clamp(42px,7vw,76px);
-  -webkit-mask-image:radial-gradient(ellipse at center, #000 0%, transparent 74%);
-  mask-image:radial-gradient(ellipse at center, #000 0%, transparent 74%);
-  animation:bootGridIn 1.1s .05s ease-out forwards;
-}
-.boot-orbit-wrap{
-  position:absolute; top:50%; left:50%; width:min(78vw,620px); aspect-ratio:1;
-  transform:translate3d(calc(-50% + var(--boot-shift-x)),calc(-50% + var(--boot-shift-y)),0);
-  pointer-events:none; transition:transform .42s cubic-bezier(.2,.7,.2,1);
-}
-.boot-orbit{
-  position:absolute; inset:0; border:1px solid var(--boot-line); border-radius:50%;
-  opacity:0; transform:scale(.92); animation:bootOrbitIn 1.2s .12s cubic-bezier(.22,1,.36,1) forwards;
-}
-.boot-orbit::before,.boot-orbit::after{
-  content:""; position:absolute; border:1px solid var(--home-border); border-radius:50%;
-}
-.boot-orbit::before{ inset:8.5%; }
-.boot-orbit::after{ inset:17%; border-style:dashed; opacity:.7; animation:bootOrbitRotate 24s linear infinite; }
-.boot-orbit-node{
-  position:absolute; left:50%; top:-3px; width:5px; height:5px; border-radius:50%;
-  background:var(--fg); transform:translateX(-50%); box-shadow:0 0 0 5px var(--bg-pure);
-  animation:bootNodeIn .6s .8s both;
-}
-.boot-orbit-inner{
-  position:absolute; top:50%; left:50%; width:min(45vw,310px); aspect-ratio:1;
-  border:1px solid var(--home-border); border-radius:50%; opacity:0;
-  transform:translate(-50%,-50%) scale(.88); animation:bootOrbitInnerIn 1.3s .32s cubic-bezier(.22,1,.36,1) forwards;
-  pointer-events:none;
-}
-.boot-corner{
-  position:absolute; top:max(24px,env(safe-area-inset-top)); z-index:2;
-  display:flex; flex-direction:column; gap:5px;
-  color:var(--fg-faint); font-size:8px; line-height:1.15; font-weight:500;
-  letter-spacing:.19em; opacity:0; animation:bootFadeUp .7s .55s ease-out forwards;
-}
-.boot-corner--left{ left:max(24px,calc((100vw - 520px)/2)); align-items:flex-start; }
-.boot-corner--right{ right:max(24px,calc((100vw - 520px)/2)); align-items:flex-end; text-align:right; }
-.boot-core{
-  position:relative; z-index:1; width:min(88vw,520px); display:flex; flex-direction:column; align-items:center;
-  transform:translate3d(var(--boot-content-shift-x),var(--boot-content-shift-y),0);
-  transition:transform .42s cubic-bezier(.2,.7,.2,1); text-align:center;
-}
-.boot-kicker{
-  display:flex; align-items:center; justify-content:center; gap:11px; margin-bottom:19px;
-  color:var(--fg-soft); font-size:8px; letter-spacing:.27em; line-height:1;
-  opacity:0; animation:bootFadeUp .75s .18s ease-out forwards;
-}
-.boot-kicker-line{ display:block; width:17px; height:1px; background:var(--fg-faint); }
-.boot-wordmark{
-  display:flex; align-items:center; justify-content:center; gap:.055em; margin-left:-.055em;
-  color:var(--fg); font-family:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",serif;
-  font-weight:300; font-size:clamp(104px,25vw,166px); line-height:.94; letter-spacing:-.105em;
-  transform:translate3d(0,0,0); -webkit-font-smoothing:antialiased;
-}
-.boot-glyph{ display:block; overflow:hidden; padding:.06em .025em .11em; }
-.boot-glyph>span{
-  display:block; opacity:0; transform:translate3d(0,112%,0) rotate(3deg); transform-origin:50% 100%;
-  animation:bootGlyphReveal .95s cubic-bezier(.16,1,.3,1) forwards;
-}
-.boot-glyph:nth-child(1)>span{ animation-delay:.22s; }
-.boot-glyph:nth-child(2)>span{ animation-delay:.38s; }
-.boot-wordmark-rule{ display:flex; justify-content:center; width:100%; height:1px; margin-top:25px; overflow:hidden; }
-.boot-wordmark-rule span{ display:block; width:0; height:1px; background:var(--fg); animation:bootRuleIn .85s .72s cubic-bezier(.22,1,.36,1) forwards; }
-.boot-latin{
-  display:flex; align-items:center; justify-content:center; gap:10px; margin-top:15px;
-  color:var(--fg-soft); font-size:8px; font-weight:500; letter-spacing:.21em; white-space:nowrap;
-  opacity:0; animation:bootFadeUp .72s .82s ease-out forwards;
-}
-.boot-latin i{ display:block; width:19px; height:1px; background:var(--fg-faint); }
-.boot-tagline{
-  margin-top:34px; color:var(--fg); font-family:"Songti SC","STSong","Noto Serif CJK SC",serif;
-  font-size:clamp(14px,4vw,17px); font-weight:300; letter-spacing:.16em; text-indent:.16em;
-  opacity:0; transform:translateY(7px); animation:bootFadeUp .72s 1.02s ease-out forwards;
-}
-.boot-tagline-en{
-  margin-top:9px; color:var(--fg-faint); font-size:7px; letter-spacing:.23em; font-weight:500;
-  opacity:0; animation:bootFadeUp .72s 1.16s ease-out forwards;
-}
-.boot-footer{
-  position:absolute; z-index:2; left:max(25px,calc((100vw - 520px)/2)); right:max(25px,calc((100vw - 520px)/2));
-  bottom:calc(env(safe-area-inset-bottom,0px) + clamp(26px,6.3vh,56px));
-}
-.boot-status-row{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
-.boot-status{ display:flex; align-items:center; gap:9px; color:var(--fg-soft); font-size:9px; letter-spacing:.09em; }
-.boot-status-pulse{
-  width:5px; height:5px; flex:0 0 5px; border-radius:50%; background:var(--fg);
-  animation:bootStatusPulse 1.2s ease-in-out infinite;
-}
-.boot-status-code{ color:var(--fg-faint); font-size:7px; letter-spacing:.15em; white-space:nowrap; }
-.boot-progress-track{ position:relative; height:1px; overflow:hidden; background:var(--track); }
-.boot-progress-value{
-  position:absolute; inset:0 auto 0 0; width:0; background:var(--fg);
-  animation:bootProgress 2.18s .08s cubic-bezier(.2,.75,.2,1) forwards;
-}
-.boot-progress-light{
-  position:absolute; top:-1px; bottom:-1px; left:-20%; width:20%;
-  background:linear-gradient(90deg,transparent,var(--bg-pure),transparent);
-  animation:bootProgressLight 1.3s .45s ease-in-out infinite;
-}
-.boot-footer-bottom{
-  display:flex; justify-content:space-between; gap:10px; margin-top:10px;
-  color:var(--fg-faint); font-size:7px; line-height:1.2; letter-spacing:.14em;
-}
-.boot-side-note{
-  position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  color:var(--fg-faint); font-size:7px; letter-spacing:.22em; white-space:nowrap;
-  transform:translateX(-50%); opacity:0; animation:bootFade .6s 1.6s ease-out forwards;
-}
-.boot.is-calm .boot-orbit::after,.boot.is-calm .boot-status-pulse,.boot.is-calm .boot-progress-light{ animation-play-state:paused; }
-@keyframes bootGridIn{ from{opacity:0} to{opacity:.24} }
-@keyframes bootOrbitIn{ from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
-@keyframes bootOrbitInnerIn{ from{opacity:0;transform:translate(-50%,-50%) scale(.88)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
-@keyframes bootOrbitRotate{ to{transform:rotate(360deg)} }
-@keyframes bootNodeIn{ from{opacity:0;transform:translateX(-50%) scale(0)} to{opacity:1;transform:translateX(-50%) scale(1)} }
-@keyframes bootGlyphReveal{ 0%{opacity:0;transform:translate3d(0,112%,0) rotate(3deg);filter:blur(5px)} 72%{opacity:1;filter:blur(0)} 100%{opacity:1;transform:translate3d(0,0,0) rotate(0);filter:blur(0)} }
-@keyframes bootRuleIn{ to{width:100%} }
-@keyframes bootFadeUp{ from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
-@keyframes bootFade{ to{opacity:1} }
-@keyframes bootStatusPulse{ 0%,100%{opacity:.28;transform:scale(.82)} 50%{opacity:1;transform:scale(1)} }
-@keyframes bootProgress{ 0%{width:0} 75%{width:78%} 100%{width:100%} }
-@keyframes bootProgressLight{ 0%{left:-20%;opacity:0} 18%{opacity:.8} 82%{opacity:.8} 100%{left:105%;opacity:0} }
-@keyframes bootStageLeave{ to{transform:scale(1.012)} }
-@keyframes bootLeave{ to{opacity:0;visibility:hidden;pointer-events:none} }
-
-@media (max-height:650px){
-  .boot-wordmark{font-size:clamp(84px,21vh,132px)}
-  .boot-kicker{margin-bottom:12px}
-  .boot-wordmark-rule{margin-top:17px}
-  .boot-tagline{margin-top:22px}
-  .boot-footer{bottom:calc(env(safe-area-inset-bottom,0px) + 20px)}
-  .boot-side-note{display:none}
+.boot-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.88}
+.boot::before,.boot::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1}
+.boot::before{background:linear-gradient(180deg,var(--boot-paper) 0%,transparent 19%,transparent 79%,var(--boot-paper) 100%);opacity:.68}
+.boot::after{background:repeating-linear-gradient(0deg,transparent 0 3px,var(--home-border) 4px,transparent 5px);opacity:.07;mix-blend-mode:multiply}
+.boot-sweep{position:absolute;z-index:1;left:-35%;width:170%;height:1px;pointer-events:none;opacity:.3;background:linear-gradient(90deg,transparent,var(--fg-soft) 18%,var(--fg-faint) 50%,var(--fg-soft) 82%,transparent);transform:rotate(-8deg);transform-origin:center}
+.boot-sweep--one{top:32%;animation:bootSweepOne 4.8s -1.7s ease-in-out infinite}
+.boot-sweep--two{top:69%;opacity:.18;transform:rotate(5deg);animation:bootSweepTwo 6.1s -3s ease-in-out infinite}
+.boot-topline{position:absolute;z-index:4;top:max(22px,calc(env(safe-area-inset-top,0px) + 14px));left:clamp(20px,5.4vw,76px);right:clamp(20px,5.4vw,76px);display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:8px;line-height:1.3;letter-spacing:.18em;color:var(--fg-soft)}
+.boot-signature,.boot-live{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.boot-signature{animation:bootMetaIn .8s .05s both}
+.boot-signature-sep{opacity:.38;margin:0 1px}
+.boot-slashes{height:13px;display:flex;align-items:center;gap:2px;margin-right:3px;transform:skew(-24deg)}
+.boot-slashes i{display:block;width:2px;height:7px;background:var(--fg);animation:bootSlash 1.5s ease-in-out infinite}
+.boot-slashes i:nth-child(2){height:12px;animation-delay:.12s}
+.boot-slashes i:nth-child(3){height:5px;animation-delay:.24s}
+.boot-live{gap:8px;animation:bootMetaIn .8s .16s both}
+.boot-live-dot,.boot-loading-dot{width:4px;height:4px;border-radius:50%;background:var(--fg);flex:0 0 4px;animation:bootBlink 1.15s ease-in-out infinite}
+.boot-live-index{font-variant-numeric:tabular-nums;opacity:.48;margin-left:4px}
+.boot-fragments{position:absolute;inset:0;z-index:3;pointer-events:none}
+.boot-fragment{position:absolute;display:block;white-space:nowrap;font-size:clamp(7px,.77vw,10px);line-height:1;letter-spacing:.15em;font-weight:500;color:var(--fg-soft);opacity:.75;will-change:transform;transform:translate3d(var(--fx,0px),var(--fy,0px),0) rotate(var(--fr,0deg));transition:color .3s}
+.boot-fragment::before{content:"";display:inline-block;width:clamp(9px,1.3vw,17px);height:1px;vertical-align:middle;background:currentColor;margin:0 9px 3px 0;opacity:.65}
+.boot-fragment--a{left:9%;top:20%;--fr:-7deg;animation:bootMetaIn .9s .1s both}
+.boot-fragment--b{right:12%;top:24%;--fr:5deg;animation:bootMetaIn .9s .18s both}
+.boot-fragment--c{left:5%;top:43%;--fr:-90deg;transform-origin:left top;animation:bootMetaIn .9s .24s both}
+.boot-fragment--d{right:8%;top:46%;--fr:90deg;transform-origin:right top;animation:bootMetaIn .9s .3s both}
+.boot-fragment--e{left:21%;top:61%;--fr:2deg;animation:bootMetaIn .9s .36s both}
+.boot-fragment--f{right:16%;top:67%;--fr:-4deg;animation:bootMetaIn .9s .42s both}
+.boot-fragment--g{left:11%;top:80%;--fr:4deg;animation:bootMetaIn .9s .48s both}
+.boot-fragment--h{right:8%;top:82%;--fr:-3deg;animation:bootMetaIn .9s .54s both}
+.boot-fragment--i{left:44%;top:14%;--fr:1deg;animation:bootMetaIn .9s .6s both}
+.boot-fragment--j{right:37%;top:88%;--fr:-2deg;animation:bootMetaIn .9s .66s both}
+.boot-marquee{position:absolute;z-index:2;left:0;right:0;overflow:hidden;white-space:nowrap;pointer-events:none;line-height:1}
+.boot-marquee--upper{top:29%;transform:rotate(-2.3deg)}
+.boot-marquee--lower{top:63%;transform:rotate(1.65deg)}
+.boot-marquee-track{display:flex;width:max-content;will-change:transform;opacity:.14;color:var(--fg)}
+.boot-marquee--upper .boot-marquee-track{animation:bootMarqueeLeft 26s linear infinite}
+.boot-marquee--lower .boot-marquee-track{animation:bootMarqueeRight 33s linear infinite}
+.boot-marquee-track span{display:block;flex:0 0 auto;font-size:clamp(15px,2.15vw,29px);font-weight:450;letter-spacing:.08em;padding-right:.3em}
+.boot-center{position:absolute;z-index:4;left:50%;top:50%;width:min(84vw,680px);transform:translate3d(calc(-50% + var(--boot-core-x,0px)),calc(-50% + var(--boot-core-y,0px)),0);text-align:center;will-change:transform}
+.boot-center-kicker{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:clamp(12px,2vh,22px);font-size:8px;line-height:1;letter-spacing:.24em;color:var(--fg-soft);animation:bootMetaIn .8s .2s both}
+.boot-center-kicker span{display:block;width:clamp(13px,2.2vw,24px);height:1px;background:var(--fg-faint)}
+.boot-kinetic-word{display:flex;justify-content:center;align-items:center;gap:.025em;min-height:1.02em;font-size:clamp(39px,8.3vw,91px);line-height:.98;font-weight:400;letter-spacing:.07em;font-family:"Helvetica Neue","SF Pro Display","Arial",sans-serif;font-kerning:none}
+.boot-kinetic-word span{display:inline-block;opacity:0;transform:translate3d(0,.42em,0) rotateX(-70deg);filter:blur(6px);animation:bootGlyphIn .7s cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(var(--char,0)*35ms)}
+.boot-center-caption{display:flex;justify-content:center;align-items:center;gap:clamp(9px,1.9vw,20px);margin-top:clamp(14px,2.3vh,23px);font-size:7px;line-height:1.2;letter-spacing:.17em;color:var(--fg-faint);animation:bootMetaIn .8s .35s both}
+.boot-center-caption i{display:block;width:3px;height:3px;background:var(--fg-soft);transform:rotate(45deg)}
+.boot-bottomline{position:absolute;z-index:4;left:clamp(20px,5.4vw,76px);right:clamp(20px,5.4vw,76px);bottom:calc(env(safe-area-inset-bottom,0px) + clamp(22px,4.5vh,42px));display:grid;grid-template-columns:1fr auto;gap:12px 20px;align-items:center}
+.boot-loading-copy{display:flex;align-items:center;gap:9px;font-size:8px;line-height:1.2;letter-spacing:.14em;color:var(--fg-soft);animation:bootMetaIn .7s .28s both}
+.boot-percent{font-size:9px;font-variant-numeric:tabular-nums;letter-spacing:.08em;color:var(--fg);text-align:right}
+.boot-progress-track{position:relative;grid-column:1/-1;height:2px;overflow:hidden;background:var(--track)}
+.boot-progress-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--fg);animation:bootProgress 2.45s .08s cubic-bezier(.2,.75,.2,1) forwards;will-change:width}
+.boot-progress-glint{position:absolute;top:-3px;bottom:-3px;left:-10%;width:13%;background:linear-gradient(90deg,transparent,var(--boot-paper),transparent);opacity:.9;animation:bootProgressGlint 1.05s .2s ease-in-out infinite}
+.boot-footer-meta{display:flex;grid-column:1/-1;justify-content:space-between;gap:12px;margin-top:1px;font-size:7px;line-height:1.3;letter-spacing:.14em;color:var(--fg-faint)}
+.boot-footer-meta span:last-child{white-space:nowrap}
+.boot.is-calm .boot-live-dot,.boot.is-calm .boot-loading-dot,.boot.is-calm .boot-slashes i{animation-play-state:paused}
+@keyframes bootMetaIn{from{opacity:0;filter:blur(3px);translate:0 7px}to{opacity:1;filter:blur(0);translate:0 0}}
+@keyframes bootSlash{0%,100%{transform:scaleY(.68);opacity:.45}50%{transform:scaleY(1);opacity:1}}
+@keyframes bootBlink{0%,100%{opacity:.24;transform:scale(.78)}50%{opacity:1;transform:scale(1.18)}}
+@keyframes bootGlyphIn{0%{opacity:0;transform:translate3d(0,.42em,0) rotateX(-70deg);filter:blur(6px)}72%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0) rotateX(0);filter:blur(0)}}
+@keyframes bootMarqueeLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes bootMarqueeRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@keyframes bootSweepOne{0%{translate:-18vw -15vh;opacity:0}25%{opacity:.27}70%{opacity:.15}100%{translate:20vw 19vh;opacity:0}}
+@keyframes bootSweepTwo{0%{translate:18vw 15vh;opacity:0}24%{opacity:.16}74%{opacity:.1}100%{translate:-20vw -17vh;opacity:0}}
+@keyframes bootProgress{0%{width:0}70%{width:68%}100%{width:100%}}
+@keyframes bootProgressGlint{0%{left:-15%;opacity:0}20%{opacity:.65}85%{opacity:.65}100%{left:105%;opacity:0}}
+@keyframes bootLeave{to{opacity:0;visibility:hidden;pointer-events:none;filter:blur(2px)}}
+@media (max-width:520px){
+  .boot-topline{font-size:7px;letter-spacing:.12em;top:max(20px,calc(env(safe-area-inset-top,0px) + 10px))}
+  .boot-signature,.boot-live{gap:6px}
+  .boot-fragment{font-size:7px;letter-spacing:.1em}
+  .boot-fragment::before{width:8px;margin-right:5px}
+  .boot-fragment--a{left:7%;top:20%}
+  .boot-fragment--b{right:5%;top:25%}
+  .boot-fragment--c{left:3%;top:45%}
+  .boot-fragment--d{right:1.5%;top:46%}
+  .boot-fragment--e{left:10%;top:62%}
+  .boot-fragment--f{right:7%;top:68%}
+  .boot-fragment--g{left:7%;top:79%}
+  .boot-fragment--h{right:4%;top:84%}
+  .boot-fragment--i{left:39%;top:14%}
+  .boot-fragment--j{right:31%;top:89%}
+  .boot-center{width:90vw;top:49%}
+  .boot-kinetic-word{font-size:clamp(37px,12vw,61px)}
+  .boot-center-kicker{font-size:7px;letter-spacing:.15em;gap:8px}
+  .boot-center-caption{font-size:6px;letter-spacing:.1em;gap:8px}
+  .boot-marquee--upper{top:31%}
+  .boot-marquee--lower{top:61%}
+  .boot-marquee-track span{font-size:18px}
+  .boot-bottomline{left:20px;right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);gap:10px 12px}
+  .boot-loading-copy{font-size:7px;letter-spacing:.09em}
+  .boot-footer-meta{font-size:6px;letter-spacing:.08em}
 }
 @media (max-width:360px){
-  .boot-corner{font-size:7px}
-  .boot-corner--left{left:18px}
-  .boot-corner--right{right:18px}
-  .boot-footer{left:20px;right:20px}
-  .boot-tagline-en{letter-spacing:.16em}
-  .boot-footer-bottom{font-size:6px;letter-spacing:.09em}
+  .boot-live{font-size:6px}
+  .boot-center-kicker{font-size:6px}
+  .boot-center-caption{letter-spacing:.06em}
+  .boot-fragment--c,.boot-fragment--d{opacity:.42}
+  .boot-footer-meta{letter-spacing:.04em}
+}
+@media (max-height:650px){
+  .boot-center{top:47%}
+  .boot-kinetic-word{font-size:clamp(34px,8vh,64px)}
+  .boot-center-kicker{margin-bottom:10px}
+  .boot-center-caption{margin-top:12px}
+  .boot-bottomline{bottom:calc(env(safe-area-inset-bottom,0px) + 15px)}
+  .boot-fragment--i,.boot-fragment--j{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .boot,.boot-stage{animation-duration:.25s;animation-delay:.15s}
-  .boot-grid,.boot-orbit,.boot-orbit-inner,.boot-corner,.boot-kicker,.boot-glyph>span,.boot-wordmark-rule span,.boot-latin,.boot-tagline,.boot-tagline-en,.boot-footer,.boot-side-note{animation-duration:.01ms;animation-delay:0s;animation-fill-mode:both}
-  .boot-orbit::after,.boot-status-pulse,.boot-progress-light{animation:none}
-  .boot-progress-value{animation-duration:.15s;animation-delay:0s}
+  .boot,.boot-sweep--one,.boot-sweep--two,.boot-marquee--upper .boot-marquee-track,.boot-marquee--lower .boot-marquee-track{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important}
+  .boot-fragment,.boot-signature,.boot-live,.boot-center-kicker,.boot-center-caption,.boot-loading-copy,.boot-kinetic-word span{animation-duration:.01ms!important;animation-delay:0s!important;opacity:1;filter:none;transform:none}
+  .boot-slashes i,.boot-live-dot,.boot-loading-dot,.boot-progress-glint{animation:none}
+  .boot-progress-fill{animation-duration:.25s;animation-delay:0s}
 }
 
 html.pm-open{ --pm-chat-head-bg:#ededed; --pm-chat-head-fg:#171717; }
