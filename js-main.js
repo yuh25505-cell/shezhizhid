@@ -16,7 +16,7 @@
   var width = 0, height = 0, dpr = 1, raf = 0, destroyed = false;
   var startAt = performance.now(), pointer = { x: -1000, y: -1000, active: false, down: false, energy: 0 };
   var particles = [], bursts = [], fragments = Array.prototype.slice.call(boot.querySelectorAll('[data-float]'));
-  var words = ['THINK', 'MAKE', 'CREATE', 'PLAY', 'IMAGINE', 'FEEL'];
+  var words = ['THINK', 'CREATE'];
   var loadingPhrases = ['TUNING INTO YOUR WORLD', 'GATHERING YOUR LITTLE THINGS', 'MAKING ROOM FOR WHAT’S NEXT', 'READY WHEN YOU ARE'];
   var lastWord = -1, lastPhrase = -1, currentWordTimer = 0, lastProgress = -1;
   var fg = '#101010';
@@ -58,8 +58,22 @@
   function updateTypography(now){
     var elapsed = now - startAt;
     if (!prefersReduced && elapsed < 2450){
-      var wi = Math.min(words.length-1, Math.floor(elapsed / 480));
-      if (wi !== lastWord){ lastWord = wi; wordSet(words[wi]); }
+      /* 中央主词只切换一次，让每个词有足够停留时间；用横向揭幕替代连续上弹。 */
+      var wi = elapsed < 1190 ? 0 : 1;
+      if (wi !== lastWord){
+        lastWord = wi;
+        if (wi === 0) {
+          wordSet(words[wi]);
+        } else if (wordEl) {
+          wordEl.classList.add('is-word-leaving');
+          currentWordTimer = window.setTimeout(function(){
+            currentWordTimer = 0;
+            if (destroyed || !wordEl || boot.style.display === 'none') return;
+            wordEl.classList.remove('is-word-leaving');
+            wordSet(words[wi]);
+          }, 340);
+        }
+      }
       var pi = Math.min(loadingPhrases.length-1, Math.floor(elapsed / 650));
       if (pi !== lastPhrase && loadingText){ lastPhrase = pi; loadingText.textContent = loadingPhrases[pi]; }
       if (liveIndex) liveIndex.textContent = String(Math.min(99, Math.floor(elapsed / 34))).padStart(3,'0');
