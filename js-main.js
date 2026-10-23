@@ -2,7 +2,7 @@
  * 拆分自原 app.js；所有 js 文件以经典脚本方式共享全局作用域，需按 index.html 中的顺序加载。 */
 'use strict';
 
-/* 全屏启动场：流体网格、漂移排版、触摸扰动与轻量粒子尾迹。 */
+/* 全屏启动场：流体线场、漂移排版、触摸扰动与柔光微尘。 */
 (function bindBootMotion(){
   var boot = document.getElementById('boot');
   if (!boot) return;
@@ -15,7 +15,7 @@
   var prefersReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var width = 0, height = 0, dpr = 1, raf = 0, destroyed = false;
   var startAt = performance.now(), pointer = { x: -1000, y: -1000, active: false, down: false, energy: 0 };
-  var particles = [], bursts = [], fragments = Array.prototype.slice.call(boot.querySelectorAll('[data-float]'));
+  var particles = [], fragments = Array.prototype.slice.call(boot.querySelectorAll('[data-float]'));
   var words = ['THINK', 'CREATE'];
   var loadingPhrases = ['TUNING INTO YOUR WORLD', 'GATHERING YOUR LITTLE THINGS', 'MAKING ROOM FOR WHAT’S NEXT', 'READY WHEN YOU ARE'];
   var lastWord = -1, lastPhrase = -1, currentWordTimer = 0, lastProgress = -1;
@@ -36,13 +36,21 @@
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var count = Math.round(Math.max(88, Math.min(230, width * height / 5200)));
+    /* 减少数量、移除拖尾：粒子变成轻柔的漂浮微尘，不再像细小虫体来回爬动。 */
+    var count = Math.round(Math.max(42, Math.min(96, width * height / 12500)));
     particles = [];
     for (var i = 0; i < count; i++) particles.push(makeParticle(random(0,width),random(0,height)));
     paint(performance.now(), false);
   }
   function makeParticle(x,y){
-    return {x:x,y:y,px:x,py:y,seed:random(0,1000),size:random(.55,1.65),speed:random(.28,1.05),alpha:random(.12,.44),life:random(10,90)};
+    /* 每个微尘围绕固定锚点走缓慢的平滑曲线，不做随机游走或尖锐折返。 */
+    return {
+      ox:x, oy:y, x:x, y:y,
+      phase:random(0,Math.PI*2), phase2:random(0,Math.PI*2),
+      ampX:random(5,25), ampY:random(4,17),
+      speed:random(.62,1.08),
+      size:random(.65,1.55), alpha:random(.13,.34)
+    };
   }
   function wordSet(word){
     if (!wordEl) return;
@@ -81,15 +89,6 @@
     var ratio = Math.min(100, Math.max(0, Math.round((1 - Math.pow(1 - Math.min(1, elapsed / 2520), 2.1)) * 100)));
     if (ratio !== lastProgress){ lastProgress = ratio; if(progressEl) progressEl.textContent = String(ratio).padStart(2,'0') + '%'; }
     if (ratio >= 100 && loadingText && !prefersReduced) loadingText.textContent = 'ALL YOUR THINGS, IN PLACE';
-  }
-  function spawnBurst(x,y,amount){
-    var count = amount || (width < 600 ? 22 : 34);
-    for (var i=0;i<count;i++){
-      var angle = Math.random()*Math.PI*2;
-      var speed = random(1.0,4.2);
-      bursts.push({x:x+random(-7,7),y:y+random(-7,7),vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:random(18,44),max:44,len:random(3,15),width:random(.5,1.3),seed:random(0,20)});
-    }
-    if (bursts.length > 110) bursts.splice(0, bursts.length - 110);
   }
   function drawFlowLines(t){
     var lineGap = width < 600 ? 27 : 34;
@@ -147,52 +146,42 @@
     ctx.globalAlpha = 1;
   }
   function drawParticles(t, advance){
+    /* 柔光微尘：只绘制低对比度光点，不画运动尾线，也不在点击时喷射短线。 */
+    var time = t * .00022;
     for(var i=0;i<particles.length;i++){
       var p=particles[i];
-      if(advance){
-        p.px=p.x; p.py=p.y;
-        var angle = Math.sin(p.y*.009 + t*.00052 + p.seed)*1.9 + Math.cos(p.x*.005 - t*.00023 + p.seed*.3)*1.2;
-        p.x += Math.cos(angle)*p.speed;
-        p.y += Math.sin(angle)*p.speed*.9;
-        var dx=p.x-pointer.x, dy=p.y-pointer.y, dist=Math.sqrt(dx*dx+dy*dy);
-        var radius=pointer.down?190:125;
-        if(pointer.active && dist<radius){
-          var pull=(1-dist/radius)*(pointer.down?1.9:.8);
-          var safe=dist+2;
-          p.x += (dx/safe)*pull + (-dy/safe)*pull*.8;
-          p.y += (dy/safe)*pull + (dx/safe)*pull*.8;
-        }
-        if(p.x < -20 || p.x > width+20 || p.y < -20 || p.y > height+20){
-          var side=Math.floor(Math.random()*4);
-          if(side===0){p.x=random(0,width);p.y=-5;} else if(side===1){p.x=width+5;p.y=random(0,height);} else if(side===2){p.x=random(0,width);p.y=height+5;} else {p.x=-5;p.y=random(0,height);}
-          p.px=p.x;p.py=p.y;
-        }
+      var phase = time * p.speed + p.phase;
+      var phase2 = time * .73 * p.speed + p.phase2;
+      var x = p.ox + Math.sin(phase) * p.ampX + Math.sin(phase2*.61) * p.ampX*.22;
+      var y = p.oy + Math.cos(phase2) * p.ampY + Math.cos(phase*.57) * p.ampY*.2;
+      var dx=x-pointer.x, dy=y-pointer.y, dist=Math.sqrt(dx*dx+dy*dy);
+      var influence=0;
+      var radius=width<600?138:178;
+      if(pointer.active && dist<radius){
+        var raw=1-dist/radius;
+        influence=raw*raw*(3-2*raw);
+        /* 指针附近轻轻让开，并随视线离开平顺复位。 */
+        var push=influence*(pointer.down?13:8);
+        x += dx/(dist+1)*push;
+        y += dy/(dist+1)*push;
       }
+      var shimmer=.82 + .18*Math.sin(t*.00048 + p.phase*1.7);
+      var alpha=p.alpha*shimmer;
+      var r=p.size*(1+influence*.18);
+
+      /* 极淡的外缘与清晰的小核心，整体像浮尘/柔光，而非线状生物轨迹。 */
       ctx.beginPath();
-      ctx.moveTo(p.px,p.py);
-      ctx.lineTo(p.x,p.y);
-      ctx.globalAlpha=p.alpha;
-      ctx.strokeStyle=fg;
-      ctx.lineWidth=p.size;
-      ctx.stroke();
+      ctx.arc(x,y,r*3.3,0,Math.PI*2);
+      ctx.globalAlpha=alpha*.085;
+      ctx.fillStyle=fg;
+      ctx.fill();
       ctx.beginPath();
-      ctx.arc(p.x,p.y,p.size*.58,0,Math.PI*2);
-      ctx.globalAlpha=p.alpha*.82;
+      ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.globalAlpha=alpha*.62;
       ctx.fillStyle=fg;
       ctx.fill();
     }
     ctx.globalAlpha=1;
-    if(advance){
-      for(var j=bursts.length-1;j>=0;j--){
-        var b=bursts[j];
-        b.x+=b.vx; b.y+=b.vy; b.vx*=.965; b.vy*=.965; b.life--;
-        var fade=Math.max(0,b.life/b.max);
-        ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-b.vx*b.len*.55,b.y-b.vy*b.len*.55);
-        ctx.globalAlpha=fade*.75; ctx.strokeStyle=fg; ctx.lineWidth=b.width; ctx.stroke();
-        if(b.life<=0) bursts.splice(j,1);
-      }
-      ctx.globalAlpha=1;
-    }
   }
   function moveFragments(t){
     for(var i=0;i<fragments.length;i++){
@@ -232,7 +221,7 @@
   boot.addEventListener('pointermove',function(event){setPointer(event);},{passive:true});
   boot.addEventListener('pointerdown',function(event){
     setPointer(event); pointer.down=true;
-    spawnBurst(pointer.x,pointer.y);
+    /* 点按只扰动全屏流线与近处微尘，不再发散短线粒子。 */
     if(prefersReduced) paint(performance.now(),false);
   },{passive:true});
   boot.addEventListener('pointerup',function(){pointer.down=false;},{passive:true});
