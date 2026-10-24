@@ -2468,7 +2468,7 @@ html[data-theme="dark"] .pm-voice-call-end{ background:#f5f5f5; color:#111; bord
 
 /* 私聊返回键右侧的未读总数 */
 .pm-back-badge{
-  flex:none; margin-left:-6px; min-width:20px; height:20px; padding:0 6px; box-sizing:border-box; border-radius:999px;
+  flex:none; margin-left:-8px; min-width:20px; height:20px; padding:0 6px; box-sizing:border-box; border-radius:999px;
   display:flex; align-items:center; justify-content:center; line-height:1; pointer-events:none;
   background:#e0e0e0; color:#151515;
   font-size:calc(12px * var(--island-font-size-scale)); font-weight:var(--island-fw-600);

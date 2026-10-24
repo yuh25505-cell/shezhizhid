@@ -87,7 +87,7 @@ function getSortedVisibleChats(){
 function renderChats(){
   var list = $('chatList'); if (!list) return;
   var rows = getSortedVisibleChats();
-  if (!rows.length) { list.innerHTML = '<li class="empty-state">还没有会话<br>点右上角 ＋ 添加人设开始</li>'; return; }
+  if (!rows.length) { list.innerHTML = '<li class="empty-state">还没有会话<br>点右上角 ＋ 添加人设开始</li>'; updatePMBackBadge(); updateHomeChatBadge(); return; }
   var now = Date.now();
   list.innerHTML = rows.map(function(r, i){
     var c = r.chat;
@@ -107,6 +107,23 @@ function renderChats(){
       '</div></li>';
   }).join('');
   updatePMBackBadge();
+  updateHomeChatBadge();
+}
+
+/* 主屏幕「聊天」App 图标右上角：所有会话未读总数（手动标为未读的算 1 条）。 */
+function updateHomeChatBadge(){
+  var total = 0;
+  CHATS.forEach(function(c){
+    if (!c) return;
+    total += Number(c.unread) > 0 ? Number(c.unread) : (c.markedUnread ? 1 : 0);
+  });
+  var label = total > 99 ? '99+' : String(total);
+  $$('.app[data-app="聊天"]').forEach(function(app){
+    var b = app.querySelector('.app-unread-badge');
+    if (total <= 0) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('span'); b.className = 'app-unread-badge'; b.setAttribute('aria-hidden', 'true'); app.appendChild(b); }
+    b.textContent = label;
+  });
 }
 
 /* 私聊界面返回键右侧：其它会话的未读总数（手动标为未读的算 1 条），超过 99 显示 99+。 */
