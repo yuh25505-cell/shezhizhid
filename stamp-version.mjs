@@ -1,10 +1,3 @@
-/* 岛屿 · 版本戳
- * 给当前这一份代码算出一个"构建号"（版本号 + 内容指纹），写进：
- *   version.json      —— 网页版「检查更新」去线上读取、与本机对比
- *   js-core-version.js —— 当前这份代码自带的构建号（页面加载时读到的就是它）
- *   sw.js 的 BUILD_STAMP —— 让每次发布 sw.js 的字节都不同，浏览器会自动发现新版本
- * 指纹覆盖 index.html、全部脚本样式、manifest、changelog.json 与 sw.js，所以只要发布了新内容，构建号一定会变。
- * 用法：node stamp-version.mjs（或 npm run stamp）。可重复运行，内容没变时结果不变。 */
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';

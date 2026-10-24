@@ -1,7 +1,7 @@
 const CACHE_VERSION = '__CACHE_VERSION__';
 const CACHE_NAME = `island-${CACHE_VERSION}`;
 // 由 stamp-version.mjs 自动写入：每次发布内容变化，sw.js 的字节也跟着变，浏览器就能发现新版本。
-const BUILD_STAMP = '1.69.2-33ee5a17';
+const BUILD_STAMP = '1.69.2-8495e66a';
 const APP_SHELL = [
   './',
   './index.html',
@@ -150,7 +150,6 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  // 版本文件只走网络、不进缓存：离线时检查更新应当失败，而不是读到旧缓存谎称"已是最新"。
   if (url.pathname.endsWith('/version.json')) { event.respondWith(fetch(request)); return; }
 
   // 图标：缓存优先，命中就直接用，不联网。
