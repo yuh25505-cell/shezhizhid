@@ -2526,7 +2526,12 @@ html[data-theme="dark"] #chatApp.has-pinned-chats.is-chats-tab-active::before{ b
 .pm-view.session-has-wallpaper::before{
   content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:var(--pm-session-wallpaper); background-position:center; background-size:cover; background-repeat:no-repeat;
-  opacity:1;
+  opacity:1; filter:brightness(1);
+}
+/* 日间保持壁纸原图亮度；夜间轻微压暗，避免背景抢过消息内容。 */
+html[data-theme="dark"] .pm-view.session-has-wallpaper::before{ filter:brightness(.82); }
+@media (prefers-color-scheme: dark){
+  html:not([data-theme]) .pm-view.session-has-wallpaper::before{ filter:brightness(.82); }
 }
 .pm-view.session-has-wallpaper .pm-shell{ z-index:1; background:transparent; }
 /* 自定义聊天壁纸下，位置卡片与文件卡片保持不透明底色，避免壁纸透过半透明卡片。 */
