@@ -381,7 +381,7 @@ function bindChatEvents(){
   if (setUserPersonaActiveBtn) setUserPersonaActiveBtn.addEventListener('click', setUserPersonaActive);
 
   var pmBack = $('pmBack'); if (pmBack) pmBack.addEventListener('click', function(){
-    if (messageSelectionMode) { clearMessageSelection(); renderMessages(false); }
+    if (messageSelectionMode) { clearMessageSelection(); }
     else closePM();
   });
   var pmMore = $('pmMore'); if (pmMore) pmMore.addEventListener('click', function(){
@@ -1121,8 +1121,8 @@ function bindChatEvents(){
           else if (action === 'delete') deleteMessageAt(index);
           else if (action === 'select') enterMessageSelection(index);
         };
-        /* 复制依赖浏览器的即时用户手势授权；其余可能触发整列表重绘的操作等菜单先完成一帧关闭。 */
-        if (action === 'copy' || action === 'quote' || action === 'favorite' || action === 'delete') {
+        /* 本地折叠/多选操作只改动目标消息节点，直接响应；避免双 RAF 叠加点击延迟。 */
+        if (action === 'copy' || action === 'quote' || action === 'favorite' || action === 'delete' || action === 'translate' || action === 'transcribe' || action === 'select') {
           run();
         } else if (typeof requestAnimationFrame === 'function') {
           requestAnimationFrame(function(){ requestAnimationFrame(run); });

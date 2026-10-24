@@ -769,6 +769,11 @@ html[data-theme="dark"] .pm-message-action-popover{
 
 .pm-message-translation.is-loading{ opacity:1; color:#111; background:#fff; font-style:italic; }
 
+/* 折叠节点保留在 DOM 中，切换时不重建消息列表。 */
+.pm-message-translation.is-collapsed,
+.pm-voice-transcript.is-collapsed,
+.chat-message__transcript.is-collapsed{ display:none !important; }
+
 .pm-quote-bar{ display:none; flex:none; align-items:center; gap:8px; margin:0 12px; padding:4px 10px; border-left:0; border-radius:8px; background:rgba(127,127,127,.10); box-sizing:border-box; color:var(--fg); }
 
 .pm-quote-bar.is-open{ display:flex; }
