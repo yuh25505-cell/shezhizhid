@@ -2454,7 +2454,29 @@ html[data-theme="dark"] .pm-voice-call-end{ background:#f5f5f5; color:#111; bord
 #chatList .list-item.is-pinned{ background:var(--bubble-bg); }
 #chatList .list-item.is-pressing{ background:var(--track); }
 
-.badge.badge-dot{ min-width:9px; width:9px; height:9px; padding:0; }
+/* 未读角标：用户指定的红底白字（日夜间一致），属于 DESIGN.md 配色规则的明确例外 */
+.chat-avatar-wrap{ position:relative; flex:none; width:44px; height:44px; }
+.chat-unread-badge{
+  position:absolute; top:-6px; right:-7px; z-index:2;
+  min-width:18px; height:18px; padding:0 5px; box-sizing:border-box; border-radius:999px;
+  display:flex; align-items:center; justify-content:center;
+  background:#ff3b30; color:#fff; line-height:1;
+  font-size:calc(11px * var(--island-font-size-scale)); font-weight:var(--island-fw-600);
+  font-variant-numeric:tabular-nums;
+}
+.chat-unread-badge.is-dot{ min-width:10px; width:10px; height:10px; padding:0; top:-3px; right:-3px; }
+
+/* 私聊返回键右侧的未读总数 */
+.pm-back-badge{
+  flex:none; margin-left:-6px; min-width:20px; height:20px; padding:0 6px; box-sizing:border-box; border-radius:999px;
+  display:flex; align-items:center; justify-content:center; line-height:1; pointer-events:none;
+  background:#e0e0e0; color:#151515;
+  font-size:calc(12px * var(--island-font-size-scale)); font-weight:var(--island-fw-600);
+  font-variant-numeric:tabular-nums;
+}
+.pm-back-badge[hidden]{ display:none; }
+html[data-theme="dark"] .pm-back-badge{ background:#1E1E1E; color:#fff; }
+@media (prefers-color-scheme: dark){ html:not([data-theme]) .pm-back-badge{ background:#1E1E1E; color:#fff; } }
 
 .chat-list-menu{ position:fixed; inset:0; z-index:200; }
 .chat-list-menu-mask{ position:absolute; inset:0; background:transparent; }

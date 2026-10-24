@@ -36,6 +36,7 @@ function openPM(name){
   syncPMChrome();
   pmView.setAttribute('aria-hidden', 'false');
   var cleared = false;
+  try { updatePMBackBadge(); } catch (e) {}
   for (var i = 0; i < CHATS.length; i++) {
     if (CHATS[i].name === name && (CHATS[i].unread || CHATS[i].markedUnread)) { CHATS[i].unread = 0; CHATS[i].markedUnread = false; cleared = true; break; }
   }

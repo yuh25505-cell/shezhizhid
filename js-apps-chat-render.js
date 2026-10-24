@@ -91,20 +91,34 @@ function renderChats(){
   var now = Date.now();
   list.innerHTML = rows.map(function(r, i){
     var c = r.chat;
-    var badge = c.unread ? '<span class="badge">' + c.unread + '</span>'
-      : (c.markedUnread ? '<span class="badge badge-dot" aria-label="未读"></span>' : '');
+    var badge = '';
+    if (Number(c.unread) > 0) badge = '<span class="chat-unread-badge">' + (Number(c.unread) > 99 ? '99+' : Number(c.unread)) + '</span>';
+    else if (c.markedUnread) badge = '<span class="chat-unread-badge is-dot" aria-label="未读"></span>';
     return '<li class="list-item' + (c.pinned ? ' is-pinned' : '') + '" data-name="' + escapeHTML(c.name) + '">' +
-      avatarHTML(c.name, i, c.avatar) +
+      '<div class="chat-avatar-wrap">' + avatarHTML(c.name, i, c.avatar) + badge + '</div>' +
       '<div class="li-main">' +
         '<div class="li-top">' +
           '<span class="li-name">' + escapeHTML(c.name) + '</span>' +
           '<span class="li-time">' + escapeHTML(formatChatListTime(r.ts, now)) + '</span>' +
         '</div>' +
         '<div class="li-bottom">' +
-          '<span class="li-preview">' + escapeHTML(c.preview || '') + '</span>' + badge +
+          '<span class="li-preview">' + escapeHTML(c.preview || '') + '</span>' +
         '</div>' +
       '</div></li>';
   }).join('');
+  updatePMBackBadge();
+}
+
+/* 私聊界面返回键右侧：其它会话的未读总数（手动标为未读的算 1 条），超过 99 显示 99+。 */
+function updatePMBackBadge(){
+  var el = $('pmBackBadge'); if (!el) return;
+  var total = 0;
+  CHATS.forEach(function(c){
+    if (!c || c.name === currentName) return;
+    total += Number(c.unread) > 0 ? Number(c.unread) : (c.markedUnread ? 1 : 0);
+  });
+  el.textContent = total > 99 ? '99+' : String(total);
+  el.hidden = total <= 0;
 }
 
 function findChatByName(name){
