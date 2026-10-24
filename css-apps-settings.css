@@ -1,6 +1,4 @@
-/* 岛屿 · 设置（含 API / 字体 / 备份 / 存储 / 外观主题 / 更新日志）
- * 由原 app.css 按 App 拆分而来；规则相对顺序保持不变。
- * 加载顺序见 index.html：core-base → core-shared → home → music → chat → phone → worldbook → settings → 其余占位 App。 */
+
 
 /* 设置应用 */
 .settings-app{ position:fixed; inset:0; z-index:65; background:var(--bg); display:none; }
@@ -124,8 +122,6 @@ textarea.api-input{ resize:none; min-height:84px; padding:12px 14px; font-family
 .api-slider::-moz-range-track{ height:4px; border-radius:999px; background:var(--track); }
 .api-slider::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:22px; height:22px; margin-top:-9px; border-radius:50%; background: var(--fg); cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
 .api-slider::-moz-range-thumb{ width:22px; height:22px; border-radius:50%; background: var(--fg); border:0; cursor:pointer; }
-
-
 
 .api-slider-value{ flex:none; min-width:38px; text-align:right; font-size:calc(14px * var(--island-font-size-scale)); font-weight:var(--island-fw-600); font-variant-numeric: tabular-nums; }
 
@@ -285,11 +281,6 @@ textarea.api-input{ resize:none; min-height:84px; padding:12px 14px; font-family
 .dark-dim-range::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:#000;box-shadow:0 1px 4px rgba(0,0,0,.22);cursor:pointer}
 .dark-dim-range:disabled{cursor:default;opacity:.48;pointer-events:none}
 
-
-
-
-
-
 .dark-dim-lock{min-width:46px;height:30px;padding:0 9px;border-radius:9px;background:var(--bubble-bg);border:1px solid var(--track);font-size:calc(11px * var(--island-font-size-scale));font-weight:var(--island-fw-600);color:var(--fg-soft);white-space:nowrap}
 
 .dark-dim-lock.is-on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
@@ -301,7 +292,6 @@ textarea.api-input{ resize:none; min-height:84px; padding:12px 14px; font-family
 .dark-dim-label{font-size:calc(13px * var(--island-font-size-scale))}
 .dark-dim-lock{min-width:44px;padding:0 8px}
 }
-
 
 .about-hero{display:flex;align-items:center;gap:12px;margin:8px 16px 6px;padding:18px;border-radius:16px;background:var(--card-bg);border:1px solid var(--card-bd)}
 
@@ -447,7 +437,6 @@ textarea.api-input{ resize:none; min-height:84px; padding:12px 14px; font-family
 
 .theme-option.is-on .theme-check{ opacity:1; }
 
-
 .theme-preview{ flex:none; width:44px; height:44px; border-radius:5px; border:1px solid var(--home-border-strong); position:relative; overflow:hidden; }
 
 .theme-preview-light{ background:#fff; }
@@ -493,7 +482,6 @@ html[data-theme="dark"] .settings-panel[data-panel="notifications"] .notificatio
 
 .notification-actions .appearance-upload-btn{flex:1}
 
-/* 自动同步更新日志：按日期分组，同一天使用 1.、2.、3. 顺序编号 */
 .changelog{display:grid;gap:18px;margin:0 16px 20px}
 
 .changelog-day{display:grid;gap:8px}
@@ -504,8 +492,6 @@ html[data-theme="dark"] .settings-panel[data-panel="notifications"] .notificatio
 
 .api-note-card{padding:11px 12px;border-radius:12px;background:var(--bubble-bg);color:var(--fg-faint);font-size:calc(11.5px * var(--island-font-size-scale));line-height:1.55;}
 
-
-/* ===== 检查更新 ===== */
 .me-item .me-status{ flex:none; margin-left:auto; font-style:normal; font-size:calc(12px * var(--island-font-size-scale)); color:var(--fg-faint); }
 .me-item .me-status.is-hot{ color:#e5484d; font-weight:var(--island-fw-650); }
 .me-item:disabled{ opacity:.6; }
@@ -523,7 +509,6 @@ html[data-theme="dark"] .settings-panel[data-panel="notifications"] .notificatio
 .update-card-actions .api-btn{ padding:11px 12px; border-radius:12px; font-size:calc(13px * var(--island-font-size-scale)); }
 .update-card-actions .api-btn:disabled{ opacity:.55; }
 .update-card-actions .api-btn[hidden]{ display:none; }
-
 
 /* ---------- 铃声设置 ---------- */
 .sound-row{ padding:14px 16px; border-top:1px solid var(--track); }

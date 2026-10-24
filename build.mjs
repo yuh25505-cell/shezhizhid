@@ -25,7 +25,6 @@ function formatDate(date) {
 function changelogHtml(entries) {
   const normalized = entries.map((entry, index) => ({
     date: String(entry.date || ''),
-    // 兼容旧日志中的全局编号：仅用于还原历史先后，不再显示。
     legacyNumber: Number.isFinite(Number(entry.number)) ? Number(entry.number) : null,
     title: String(entry.title || ''),
     body: String(entry.body || ''),
@@ -36,8 +35,6 @@ function changelogHtml(entries) {
     const byDate = b.date.localeCompare(a.date);
     if (byDate) return byDate;
 
-    // 同一天按历史编号从旧到新排列；没有旧编号的新内容自动放到当天最后，
-    // 因此显示编号会自然续上 1.、2.、3.……
     const aHasNumber = a.legacyNumber !== null;
     const bHasNumber = b.legacyNumber !== null;
     if (aHasNumber && bHasNumber && a.legacyNumber !== b.legacyNumber) {
@@ -91,7 +88,6 @@ for (const dir of dirs) {
   fs.cpSync(path.join(root, dir), path.join(dist, dir), { recursive: true });
 }
 
-// 日志作为独立数据源同时复制到 dist：运行时可主动刷新，WebToApp 打包也能直接带上最新日志。
 fs.copyFileSync(changelogPath, path.join(dist, 'changelog.json'));
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 fs.writeFileSync(path.join(dist, 'release.json'), JSON.stringify({

@@ -310,7 +310,6 @@ function init(){
   applyHomeAppearance();
   applyFontPreference();
   bindEvents();
-  /* 更新日志同步不急：等启动动画结束再拉取并重绘，免得和动画抢主线程 */
   setTimeout(function(){ refreshChangelog(false); }, 3400);
   /* 启动层动画期间尽量别让主线程连续跑太久：每一段重活之间让出一帧，动画不再被"一口气"卡住。 */
   loadState().then(function(){

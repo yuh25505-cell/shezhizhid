@@ -1,19 +1,10 @@
-/* 岛屿 · 检查更新 / 强制刷新（网页版）
- *
- * 数据安全原则：更新只替换"程序文件"（html / js / css / 缓存），
- * 绝不碰 IndexedDB、localStorage 里的聊天、人设、世界书、设置等本地数据。
- * 刷新前会先把内存里还没写完的内容落盘，并拍一张整库安全快照；
- * 万一刷新后主库意外为空，IslandDB 打开时会自动从快照恢复（见 js-core-storage.js）。
- *
- * 流程：检查（读线上 version.json，和本机 ISLAND_BUILD 对比）→ 保存数据 → 逐个重新下载程序文件（绕过浏览器缓存）
- *      → 清掉旧的离线缓存 → 刷新页面 → 刷新后核对构建号，没换成新版就弹窗让用户再强制刷新一次。
- * APK 版是覆盖安装更新：程序文件打在安装包里，这里只显示版本、不做网页刷新。 */
+
 'use strict';
 
 var IslandUpdate = (function(){
-  var EXPECT_KEY = 'island.update.expect';     /* localStorage：刷新前写下"我要更新到哪个构建号" */
+  var EXPECT_KEY = 'island.update.expect';
   var LAST_CHECK_KEY = 'island.update.lastCheck';
-  var MAX_TRIES = 2;                           /* 同一个目标构建号最多自动提示强制刷新的次数 */
+  var MAX_TRIES = 2;
   var _busy = false, _remote = null;
 
   function localBuild(){ return typeof ISLAND_BUILD === 'string' ? ISLAND_BUILD : ''; }
@@ -37,7 +28,6 @@ var IslandUpdate = (function(){
     });
   }
 
-  /* ---------- 检查 ---------- */
   function fetchRemote(){
     return withTimeout(
       fetch('./version.json?_=' + Date.now(), { cache:'no-store' }).then(function(resp){
@@ -51,7 +41,6 @@ var IslandUpdate = (function(){
     });
   }
 
-  /* 返回 { state:'latest'|'available'|'error', local, remote, error } */
   function check(){
     var local = { version:localVersion(), build:localBuild() };
     return fetchRemote().then(function(remote){
@@ -63,21 +52,18 @@ var IslandUpdate = (function(){
     });
   }
 
-  /* ---------- 刷新 ---------- */
   function assetUrlsFromHtml(html){
     var urls = {};
     var doc;
     try { doc = new DOMParser().parseFromString(html, 'text/html'); } catch(e){ return []; }
     doc.querySelectorAll('script[src], link[rel~="stylesheet"][href], link[rel="manifest"][href], link[rel~="icon"][href], link[rel="apple-touch-icon"][href]').forEach(function(el){
       var raw = el.getAttribute('src') || el.getAttribute('href') || '';
-      if (!raw || /^(https?:)?\/\//i.test(raw) || raw.indexOf('data:') === 0) return;   /* 只处理本站文件 */
+      if (!raw || /^(https?:)?\/\//i.test(raw) || raw.indexOf('data:') === 0) return;
       try { urls[new URL(raw, location.href).href] = 1; } catch(e){}
     });
     return Object.keys(urls);
   }
 
-  /* 逐个绕过浏览器缓存重新下载（cache:'reload' 会把新文件写回浏览器的 HTTP 缓存），
-   * 这样紧接着的刷新读到的就都是新文件。任何一个失败都视为失败，不刷新页面，旧版继续可用。 */
   function reloadAssets(onProgress){
     var base = new URL('./', location.href).href;
     return fetch(base + 'index.html', { cache:'reload' }).then(function(resp){
@@ -86,14 +72,14 @@ var IslandUpdate = (function(){
     }).then(function(html){
       var list = assetUrlsFromHtml(html);
       ['sw.js', 'manifest.webmanifest', 'changelog.json'].forEach(function(n){ list.push(base + n); });
-      fetch(base, { cache:'reload' }).catch(function(){});   /* 目录入口，失败无所谓 */
+      fetch(base, { cache:'reload' }).catch(function(){});
       var done = 0, total = list.length, queue = list.slice(), failed = [];
       function worker(){
         var url = queue.shift();
         if (!url) return Promise.resolve();
         return fetch(url, { cache:'reload' }).then(function(r){
           if (!r.ok) failed.push(url);
-          return r.arrayBuffer();           /* 读完整个响应，确保已写入缓存 */
+          return r.arrayBuffer();
         }).catch(function(){ failed.push(url); }).then(function(){
           done++; if (onProgress) onProgress(done, total);
           return worker();
@@ -121,7 +107,6 @@ var IslandUpdate = (function(){
     }).catch(function(){});
   }
 
-  /* 刷新前先把数据落盘 + 拍快照。保存出错时让用户决定要不要继续。 */
   function protectData(){
     var flush = (typeof flushSafetyState === 'function') ? flushSafetyState() : Promise.resolve(true);
     return withTimeout(Promise.resolve(flush), 8000, '保存超时').then(function(){
@@ -136,7 +121,7 @@ var IslandUpdate = (function(){
 
   function reloadSoon(deep){
     if (deep) {
-      /* 换一个带参数的地址，彻底绕开这个页面自己的缓存条目；刷新后会把参数抹掉 */
+
       var u = new URL(location.href);
       u.searchParams.set('_u', String(Date.now()));
       location.replace(u.href);
@@ -145,7 +130,6 @@ var IslandUpdate = (function(){
     }
   }
 
-  /* deep = true：连 service worker 一起注销重装（"没完全刷新"时用）。target = 期望更新到的构建号。 */
   function apply(target, deep, setStatus){
     if (_busy) return Promise.resolve(false);
     _busy = true;
@@ -167,7 +151,7 @@ var IslandUpdate = (function(){
       }).then(function(){
         lsSet(EXPECT_KEY, { build:target || '', tries:tries + 1, at:Date.now() });
         setStatus('即将刷新…');
-        /* 数据已在刷新前保存；刷新只重新加载程序文件。 */
+
         setTimeout(function(){ reloadSoon(!!deep); }, 350);
         return true;
       });
@@ -178,7 +162,6 @@ var IslandUpdate = (function(){
     });
   }
 
-  /* ---------- 刷新后的核对 ---------- */
   function stripCacheParam(){
     try {
       var u = new URL(location.href);
@@ -200,7 +183,7 @@ var IslandUpdate = (function(){
       toast('已更新到最新版 ' + localVersion());
       return;
     }
-    /* 刷新后构建号还是旧的：新文件没有完全生效 */
+
     if ((expect.tries || 0) >= MAX_TRIES + 1) {
       lsDel(EXPECT_KEY);
       islandConfirm('已经强制刷新了多次，页面仍是旧版本。\n\n你的本地数据都还在，没有受影响。可以试试：\n1. 完全关闭岛屿（含后台）后重新打开；\n2. 在浏览器设置里清除"缓存的图片和文件"（注意不要勾选 Cookie 和网站数据）；\n3. 稍等一两分钟，等线上部署完成后再检查更新。', {
@@ -216,9 +199,8 @@ var IslandUpdate = (function(){
     });
   }
 
-  /* ---------- 界面 ---------- */
   function fmtBuild(){ return localVersion() ? ('v' + localVersion()) : '未知版本'; }
-  /* 版本号相同但内容更新了（只改了小东西）时，补上构建号后 4~8 位，免得出现"从 v1.58.0 更新到 v1.58.0" */
+
   function fmtInfo(info){
     if (!info) return '';
     var v = info.version ? 'v' + info.version : '';
@@ -277,7 +259,6 @@ var IslandUpdate = (function(){
     setCard('发现新版本 ' + fmtInfo(res.remote) + '，点「立即更新」即可。', 'hot');
   }
 
-  /* 用户点"检查更新" */
   function runCheck(opts){
     opts = opts || {};
     if (isNativeApp()) {
@@ -320,7 +301,6 @@ var IslandUpdate = (function(){
     });
   }
 
-  /* 用户点"强制刷新"：不管版本是否一致，都重新下载全部程序文件 */
   function runForce(){
     if (isNativeApp()) return runCheck();
     if (_busy) return Promise.resolve();
@@ -329,7 +309,7 @@ var IslandUpdate = (function(){
     }).then(function(ok){
       if (!ok) return;
       var target = (_remote && _remote.build) || localBuild();
-      /* 先尽量取最新构建号作为刷新后核对的目标 */
+
       return check().then(function(res){
         if (res.state !== 'error') target = res.remote.build;
         return doApply(target, true);
@@ -348,9 +328,9 @@ var IslandUpdate = (function(){
     var open = document.getElementById('openIslandAbout');
     if (open) open.addEventListener('click', function(){ renderStatic(); });
     stripCacheParam();
-    /* 等启动动画结束（约 3.5 秒）再核对，避免弹窗被启动层盖住 */
+
     setTimeout(verifyAfterReload, 3800);
-    /* 静默检查：网页版启动几秒后看一眼线上有没有新版本，有就在设置里亮"有新版本"，不打断使用 */
+
     if (!isNativeApp()) {
       setTimeout(function(){
         var last = lsGet(LAST_CHECK_KEY);

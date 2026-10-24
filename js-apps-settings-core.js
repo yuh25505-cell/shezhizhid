@@ -1,5 +1,3 @@
-/* 岛屿 · 设置 · App 入口、面板切换、更新日志、本机存储
- * 拆分自原 app.js；所有 js 文件以经典脚本方式共享全局作用域，需按 index.html 中的顺序加载。 */
 'use strict';
 
 var settingsApp = $('settingsApp');
