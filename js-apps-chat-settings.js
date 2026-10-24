@@ -375,7 +375,11 @@ function bindPMChatSettingsEvents(){
       var avatar = $('pmSettingsCharAvatarPreview');
       if (avatar && !settings.charAvatar && !getAvatar(currentName)) avatar.textContent = (settings.charRemark || currentName).slice(0,1);
       clearTimeout(pmChatRecordSearchTimer);
-      pmChatRecordSearchTimer = setTimeout(function(){ persistSessionChat(currentName, true); }, 220);
+      pmChatRecordSearchTimer = setTimeout(function(){
+        persistSessionChat(currentName, true);
+        /* 备注变化后刷新消息列表（引用框里的 char 名、无头像时的首字），并保持当前滚动位置。 */
+        if (pmScroll && typeof renderMessages === 'function') { var keepTop = pmScroll.scrollTop; renderMessages(); pmScroll.scrollTop = keepTop; }
+      }, 220);
     });
     remark.addEventListener('change', function(){ if (currentName) persistSessionChat(currentName, true); });
   }

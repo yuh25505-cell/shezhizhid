@@ -2652,9 +2652,9 @@ html[data-theme="dark"] .pm-chat-settings-shell{ --bg:var(--bg-pure); }
 .pm-chat-settings-avatar-clear-row button{ min-height:28px; color:var(--fg-faint); font-size:calc(10px * var(--island-font-size-scale)); text-decoration:underline; text-underline-offset:3px; }
 
 
-/* 发出去的消息的引用框：始终使用不透明底色，不受聊天背景图（及整体透明度）影响。 */
-.chat-message--sent .pm-bubble-quote{ background:#efefef; opacity:1; }
-html[data-theme="dark"] .chat-message--sent .pm-bubble-quote{ background:#1d1d1d; border:1px solid #272727; opacity:1; }
+/* 消息内引用框配色（日间 / 夜间）：半透明底 + 1px 描边。 */
+.pm-bubble-quote{ background:rgba(242,242,242,.85); border:1px solid #EFEFEF; opacity:1; }
+html[data-theme="dark"] .pm-bubble-quote{ background:rgba(29,29,29,.85); border:1px solid #272727; opacity:1; }
 @media (prefers-color-scheme: dark){
-  html:not([data-theme]) .chat-message--sent .pm-bubble-quote{ background:#1d1d1d; border:1px solid #272727; opacity:1; }
+  html:not([data-theme]) .pm-bubble-quote{ background:rgba(29,29,29,.85); border:1px solid #272727; opacity:1; }
 }
