@@ -2445,3 +2445,34 @@ html[data-theme="dark"] .pm-voice-call-end{ background:#f5f5f5; color:#111; bord
 .pm-bar.has-quote:not(.is-voice) > .pm-hold{ margin-bottom:var(--pm-quote-h, 0px); }
 /* 语音模式下输入框列整体隐藏，保持“按住说话”横向铺开 */
 .pm-bar.is-voice .pm-input-col{ display:none !important; }
+
+
+/* ===== 消息列表：圆角正方形头像 / 置顶底色 / 未读小点 / 长按菜单 ===== */
+#chatList .avatar{ border-radius:12px; }
+
+#chatList .list-item.is-pinned{ background:var(--bubble-bg); }
+#chatList .list-item.is-pressing{ background:var(--track); }
+
+.badge.badge-dot{ min-width:9px; width:9px; height:9px; padding:0; }
+
+.chat-list-menu{ position:fixed; inset:0; z-index:200; }
+.chat-list-menu-mask{ position:absolute; inset:0; background:transparent; }
+.chat-list-menu-box{
+  position:absolute; min-width:148px; padding:6px; box-sizing:border-box;
+  display:flex; flex-direction:column;
+  background:var(--pop-bg, var(--bg-pure, var(--bg))); color:var(--fg);
+  border:1px solid var(--track); border-radius:14px;
+  box-shadow:0 12px 32px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.08);
+  animation:chatListMenuIn .12s ease-out;
+}
+.chat-list-menu-item{
+  appearance:none; -webkit-appearance:none; border:0; background:transparent; color:inherit;
+  font:inherit; font-size:calc(15px * var(--island-font-size-scale));
+  text-align:left; padding:12px 14px; border-radius:9px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.chat-list-menu-item + .chat-list-menu-item{ margin-top:1px; }
+.chat-list-menu-item:active{ background:var(--bubble-bg); }
+.chat-list-menu-item.is-danger{ font-weight:var(--island-fw-600); }
+
+@keyframes chatListMenuIn{ from{ opacity:0; transform:scale(.96); } to{ opacity:1; transform:scale(1); } }
