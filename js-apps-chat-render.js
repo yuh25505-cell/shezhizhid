@@ -11,7 +11,9 @@ function avatarHTML(name, index, avatar, extraClass){
 
 function userAvatarHTML(){
   var u = getActiveUserPersona();
-  var inner = u.avatar ? '<img src="' + u.avatar + '" alt="">' : escapeHTML(String(u.name || '我').charAt(0));
+  var sessionAvatar = (typeof getSessionUserAvatar === 'function' && currentName) ? getSessionUserAvatar(currentName) : null;
+  var avatar = sessionAvatar || (u && u.avatar) || null;
+  var inner = avatar ? '<img src="' + String(avatar).replace(/"/g, '&quot;') + '" alt="">' : escapeHTML(String(u && (u.name || u.socialId) || '我').charAt(0));
   return '<div class="avatar avatar-sm chat-message__avatar chat-message__user-avatar" data-avatar-owner="user" style="--deg:40deg">' + inner + '</div>';
 }
 
@@ -87,6 +89,8 @@ function getSortedVisibleChats(){
 function renderChats(){
   var list = $('chatList'); if (!list) return;
   var rows = getSortedVisibleChats();
+  var chatRoot = $('chatApp');
+  if (chatRoot) chatRoot.classList.toggle('has-pinned-chats', rows.some(function(row){ return !!(row.chat && row.chat.pinned); }));
   if (!rows.length) { list.innerHTML = '<li class="empty-state">还没有会话<br>点右上角 ＋ 添加人设开始</li>'; updatePMBackBadge(); updateHomeChatBadge(); return; }
   var now = Date.now();
   list.innerHTML = rows.map(function(r, i){
@@ -318,7 +322,7 @@ function renderContacts(){
       html += '<div class="list-item" data-name="' + escapeHTML(c.name) + '">' +
         avatarHTML(c.name, i + (letter.charCodeAt(0) || 0), c.avatar) +
         '<div class="li-main"><div class="li-top"><span class="li-name">' + escapeHTML(c.name) + '</span></div>' +
-        '<div class="li-bottom"><span class="li-preview">点击开始对话</span></div></div></div>';
+        '</div></div>';
     });
   });
   box.innerHTML = html;
