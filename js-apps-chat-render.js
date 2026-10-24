@@ -96,13 +96,16 @@ function renderChats(){
   list.innerHTML = rows.map(function(r, i){
     var c = r.chat;
     var badge = '';
+    var displayName = (typeof getSessionCharDisplayName === 'function' ? getSessionCharDisplayName(c.name) : c.name) || c.name;
+    var sessionCharAvatar = c.sessionSettings && c.sessionSettings.charAvatar;
+    var displayAvatar = sessionCharAvatar || c.avatar || (typeof getAvatar === 'function' ? getAvatar(c.name) : null) || null;
     if (Number(c.unread) > 0) badge = '<span class="chat-unread-badge">' + (Number(c.unread) > 99 ? '99+' : Number(c.unread)) + '</span>';
     else if (c.markedUnread) badge = '<span class="chat-unread-badge is-dot" aria-label="未读"></span>';
     return '<li class="list-item' + (c.pinned ? ' is-pinned' : '') + '" data-name="' + escapeHTML(c.name) + '">' +
-      '<div class="chat-avatar-wrap">' + avatarHTML(c.name, i, c.avatar) + badge + '</div>' +
+      '<div class="chat-avatar-wrap">' + avatarHTML(displayName, i, displayAvatar) + badge + '</div>' +
       '<div class="li-main">' +
         '<div class="li-top">' +
-          '<span class="li-name">' + escapeHTML(c.name) + '</span>' +
+          '<span class="li-name">' + escapeHTML(displayName) + '</span>' +
           '<span class="li-time">' + escapeHTML(formatChatListTime(r.ts, now)) + '</span>' +
         '</div>' +
         '<div class="li-bottom">' +
@@ -319,9 +322,13 @@ function renderContacts(){
     groups[letter].sort(function(a,b){ return compareContactNames(a && a.name, b && b.name); });
     html += '<div class="group-letter">' + escapeHTML(letter) + '</div>';
     groups[letter].forEach(function(c, i){
+      var sessionChat = typeof findChatByName === 'function' ? findChatByName(c.name) : null;
+      var sessionSettings = sessionChat && sessionChat.sessionSettings && typeof sessionChat.sessionSettings === 'object' ? sessionChat.sessionSettings : null;
+      var displayName = (typeof getSessionCharDisplayName === 'function' ? getSessionCharDisplayName(c.name) : c.name) || c.name;
+      var displayAvatar = (sessionSettings && sessionSettings.charAvatar) || c.avatar || null;
       html += '<div class="list-item" data-name="' + escapeHTML(c.name) + '">' +
-        avatarHTML(c.name, i + (letter.charCodeAt(0) || 0), c.avatar) +
-        '<div class="li-main"><div class="li-top"><span class="li-name">' + escapeHTML(c.name) + '</span></div>' +
+        avatarHTML(displayName, i + (letter.charCodeAt(0) || 0), displayAvatar) +
+        '<div class="li-main"><div class="li-top"><span class="li-name">' + escapeHTML(displayName) + '</span></div>' +
         '</div></div>';
     });
   });

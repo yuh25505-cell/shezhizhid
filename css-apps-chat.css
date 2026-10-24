@@ -2510,6 +2510,15 @@ html[data-theme="dark"] .pm-back-badge{ background:#1E1E1E; color:#fff; }
 #chatApp.has-pinned-chats .tab-panel[data-panel="chats"] .panel-head{ background:rgba(16,16,16,.028); }
 html[data-theme="dark"] #chatApp.has-pinned-chats .tab-panel[data-panel="chats"] .panel-head{ background:rgba(255,255,255,.04); }
 @media (prefers-color-scheme: dark){ html:not([data-theme]) #chatApp.has-pinned-chats .tab-panel[data-panel="chats"] .panel-head{ background:rgba(255,255,255,.04); } }
+/* 顶栏向上延伸到系统状态栏透明叠加区，状态栏区域与置顶顶栏使用相同底色；无置顶时沿用页面底色。 */
+#chatApp.has-pinned-chats.is-chats-tab-active::before{
+  content:""; position:absolute; z-index:0; top:0; left:0; right:0;
+  height:var(--island-sat, env(safe-area-inset-top, 0px));
+  background:rgba(16,16,16,.028); pointer-events:none;
+}
+html[data-theme="dark"] #chatApp.has-pinned-chats.is-chats-tab-active::before{ background:rgba(255,255,255,.04); }
+@media (prefers-color-scheme: dark){ html:not([data-theme]) #chatApp.has-pinned-chats.is-chats-tab-active::before{ background:rgba(255,255,255,.04); } }
+#chatApp.has-pinned-chats.is-chats-tab-active .chat-shell{ position:relative; z-index:1; }
 #contactList .list-item::before{ display:none; }
 #contactList .list-item{ border:0; }
 
@@ -2520,6 +2529,14 @@ html[data-theme="dark"] #chatApp.has-pinned-chats .tab-panel[data-panel="chats"]
   opacity:.28;
 }
 .pm-view.session-has-wallpaper .pm-shell{ z-index:1; background:transparent; }
+/* 聊天背景图只铺在会话画布下方；顶栏/输入底栏保持原有不透明底色。 */
+.pm-view.session-has-wallpaper .pm-head{ position:relative; z-index:2; background:var(--pm-chat-head-bg, #ededed); }
+.pm-view.session-has-wallpaper .pm-bar{ position:relative; z-index:2; background:var(--bg); }
+html[data-theme="dark"].pm-open .pm-view.session-has-wallpaper .pm-bar{ background:#1e1e1e; }
+@media (prefers-color-scheme: dark){ html:not([data-theme]).pm-open .pm-view.session-has-wallpaper .pm-bar{ background:var(--bg); } }
+/* 私聊消息双方头像不显示角色卡通用头像的描边 / 投影。 */
+.pm-scroll .chat-message__char-avatar,
+.pm-scroll .chat-message__user-avatar{ border:0 !important; }
 .pm-chat-settings-view,
 .pm-chat-record-search-view{
   position:absolute; inset:0; z-index:70; display:none; overflow:hidden;

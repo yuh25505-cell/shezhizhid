@@ -36,7 +36,8 @@ function getSessionCharDisplayName(name){
 
 function getSessionCharAvatar(name){
   var settings = getSessionChatSettings(name, false);
-  return settings.charAvatar || getAvatar(name) || null;
+  var chat = getSessionChat(name, false);
+  return settings.charAvatar || getAvatar(name) || (chat && chat.avatar) || null;
 }
 
 function getSessionUserAvatar(name){
@@ -48,7 +49,10 @@ function getSessionUserAvatar(name){
 
 function persistSessionChat(name, rerenderList){
   try { saveChats(); } catch (e) { console.warn('[岛屿] 保存会话设置失败', e); }
-  if (rerenderList !== false && typeof renderChats === 'function') renderChats();
+  if (rerenderList !== false) {
+    if (typeof renderChats === 'function') renderChats();
+    if (typeof renderContacts === 'function') renderContacts();
+  }
 }
 
 function applySessionWallpaper(name){
@@ -174,7 +178,7 @@ function updateSessionAvatar(kind, value){
   } else {
     if (value) settings.userAvatar = value; else delete settings.userAvatar;
   }
-  persistSessionChat(currentName, false);
+  persistSessionChat(currentName, true);
   updatePMChatSettingsUI();
   if (typeof renderMessages === 'function') renderMessages(false);
   toast(kind === 'char' ? '已更新当前会话的 Char 头像' : '已更新当前会话的 user 头像');
