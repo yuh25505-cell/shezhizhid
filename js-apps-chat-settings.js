@@ -301,6 +301,7 @@ function jumpToChatRecord(index){
   closePMChatSettings();
   window.setTimeout(function(){
     if (!pmScroll) return;
+    if (typeof ensureMessageRendered === 'function') ensureMessageRendered(index);
     var row = pmScroll.querySelector('[data-message-index="' + Number(index) + '"]');
     if (!row) { toast('这条记录暂时无法定位'); return; }
     try { row.scrollIntoView({ behavior:'smooth', block:'center' }); } catch(e) { row.scrollIntoView(); }
