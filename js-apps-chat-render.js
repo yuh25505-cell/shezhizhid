@@ -252,6 +252,13 @@ function initChatListLongPress(){
 
 initChatListLongPress();
 
+/* 应用从后台回到前台时，正停留的聊天里积累的未读视为已读。 */
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden || !currentName) return;
+  var c = findChatByName(currentName);
+  if (c && (c.unread || c.markedUnread)) { c.unread = 0; c.markedUnread = false; renderChats(); try { saveChats(); } catch (e) {} }
+});
+
 
 // 联系人首字母：中文按拼音首字母，英文按 A-Z，其它字符归入 #。
 // 中文拼音表在构建时生成并随应用一起打包，避免浏览器环境不支持 GBK/GB2312 编码导致全部落入 #。

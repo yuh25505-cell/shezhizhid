@@ -158,6 +158,7 @@ function scheduleReply(delay){
       var autoExpandTranslation = getCharAutoExpandTranslation(personaAtRequest);
       var transferResult;
       var segmentItems;
+      var beforeReplyCount = Array.isArray(MESSAGES[nameAtRequest]) ? MESSAGES[nameAtRequest].length : 0;
       if (autoExpandTranslation) {
         var parsedItems = parseCharacterAutoTranslationResponse(text);
         if (!parsedItems) {
@@ -170,6 +171,7 @@ function scheduleReply(delay){
         transferResult = processAiChatDirectives(nameAtRequest, text);
         segmentItems = splitReply(transferResult.text).map(function(item){ return { text:item, translation:'' }; });
       }
+      bumpUnreadForNewMessages(nameAtRequest, beforeReplyCount);
       if (!segmentItems.length) {
         if (transferResult.changed) {
           saveMessages(nameAtRequest); if (currentName === nameAtRequest) { renderMessages(true); scrollBottom(true); } renderChats(); saveChats(); maybeSummarizeShortTermMemory(nameAtRequest);
