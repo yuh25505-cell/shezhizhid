@@ -204,16 +204,26 @@ function updateMessageQuoteBar(){
 
 function clearMessageQuote(){ messageQuoteDraft = null; updateMessageQuoteBar(); }
 
+function focusPMInputForQuote(){
+  if (!pmInput) return;
+  /* 语音输入模式下文字框是隐藏的，先切回文字输入，才能弹出键盘。 */
+  if (pmBar && pmBar.classList.contains('is-voice') && typeof setVoiceMode === 'function') setVoiceMode(false);
+  var doFocus = function(){
+    try { pmInput.focus({ preventScroll:true }); } catch(e) { try { pmInput.focus(); } catch(err) {} }
+    try { pmInput.setSelectionRange(pmInput.value.length, pmInput.value.length); } catch(e) {}
+  };
+  doFocus();   /* 在点击操作的同一个手势里立即聚焦，系统才会允许弹出键盘 */
+  /* 菜单收起 / 布局变化后若焦点被抢走，补一次聚焦。 */
+  setTimeout(function(){ if (document.activeElement !== pmInput && pmView && pmView.classList.contains('is-open')) doFocus(); }, 80);
+}
+
 function quoteMessage(index){
   var payload = getMessageQuotePayload(index);
   if (!payload) return;
   messageQuoteDraft = payload;
-  updateMessageQuoteBar();
   closeVoiceMessageActionMenu();
-  if (pmInput) {
-    try { pmInput.focus({ preventScroll:true }); } catch(e) { try { pmInput.focus(); } catch(err) {} }
-    try { pmInput.setSelectionRange(pmInput.value.length, pmInput.value.length); } catch(e) {}
-  }
+  updateMessageQuoteBar();
+  focusPMInputForQuote();
 }
 
 function toggleMessageFavorite(index){
