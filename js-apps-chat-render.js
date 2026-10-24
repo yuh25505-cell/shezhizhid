@@ -180,12 +180,15 @@ function openChatListMenu(item, x, y){
   if (top + bh > vh - 10) top = Math.max(10, y - bh - 10);
   box.style.left = left + 'px';
   box.style.top = top + 'px';
+  var openedAt = Date.now();
   el.addEventListener('click', function(e){
+    if (Date.now() - openedAt < 450) return;   /* 抬手瞬间的残余点击不算 */
     var btn = e.target.closest('[data-clm]');
     if (btn) { var nm = chatListMenuName; closeChatListMenu(); chatListMenuAction(btn.dataset.clm, nm); return; }
     if (e.target.closest('[data-clm-close]')) closeChatListMenu();
   });
-  el.addEventListener('contextmenu', function(e){ e.preventDefault(); closeChatListMenu(); });
+  /* 安卓长按会在菜单出现后再补发一次 contextmenu，落在遮罩上；只拦截，不能关闭菜单。 */
+  el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   if (navigator.vibrate) { try { navigator.vibrate(12); } catch (e) {} }
 }
 
