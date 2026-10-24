@@ -168,17 +168,14 @@ function bubbleHTML(msg, entering, index){
     }
   } else if (msg && msg.type === 'image' && /^data:image\//i.test(String(msg.url || ''))) {
     var imageViewAttr = msg.from === 'me' ? ' data-media-view-index="' + index + '" role="button" tabindex="0" aria-label="查看图片"' : '';
-    body = '<div class="pm-image-bubble chat-bubble chat-bubble--image' + (msg.from === 'me' ? ' is-media-viewable' : '') + '"' + imageViewAttr + '><img src="' + escapeHTML(String(msg.url)) + '" alt="图片" loading="lazy"></div>';
+    body = '<div class="pm-image-bubble chat-bubble chat-bubble--image' + (msg.from === 'me' ? ' is-media-viewable' : '') + '"' + imageViewAttr + '><img src="' + escapeHTML(cachedImageSrc(msg.url)) + '" alt="图片" loading="lazy" decoding="async"></div>';
   } else if (msg && msg.type === 'image' && String(msg.description || msg.imageText || '').trim()) {
     body = '<button type="button" class="pm-image-text-bubble chat-bubble chat-bubble--image" data-image-text-index="' + index + '" aria-label="查看文字图描述"><span class="pm-image-text-content">文字图</span></button>';
   } else if (msg && msg.type === 'sticker' && /^(?:https?:\/\/|data:image\/)/i.test(String(msg.url || ''))) {
     var stickerViewAttr = msg.from === 'me' ? ' data-media-view-index="' + index + '" role="button" tabindex="0" aria-label="查看表情包"' : '';
-    body = '<div class="pm-sticker-bubble chat-bubble chat-bubble--sticker' + (msg.from === 'me' ? ' is-media-viewable' : '') + '"' + stickerViewAttr + '><img src="' + escapeHTML(String(msg.url)) + '" alt="表情包" loading="lazy"></div>';
+    body = '<div class="pm-sticker-bubble chat-bubble chat-bubble--sticker' + (msg.from === 'me' ? ' is-media-viewable' : '') + '"' + stickerViewAttr + '><img src="' + escapeHTML(cachedImageSrc(msg.url)) + '" alt="表情包" loading="lazy" decoding="async"></div>';
   } else if (msg && msg.type === 'voice') {
-    var blob = getVoiceBlob(msg), audioUrl = '';
-    if (blob && typeof URL !== 'undefined' && URL.createObjectURL) {
-      try { audioUrl = URL.createObjectURL(blob); voiceObjectUrls.push(audioUrl); } catch(e) {}
-    }
+    var audioUrl = getVoiceObjectUrl(msg);
     var duration = Math.max(1, Math.round(Number(msg.duration) || 1));
     var transcript = getVoiceTranscript(msg);
     /* 语音消息默认显示：语音气泡与头像同侧/顶端对齐，识别文字独立放在气泡下方。 */
@@ -325,7 +322,7 @@ function locateQuotedMessage(quoteEl){
 
 
 /* 私聊首屏只渲染最近一段消息（其余向上滑动时按需补出），进入长聊天记录不再卡顿。 */
-var PM_INITIAL_RENDER = 60, PM_RENDER_STEP = 60;
+var PM_INITIAL_RENDER = 30, PM_RENDER_STEP = 40;
 var pmRenderLimit = PM_INITIAL_RENDER, pmHiddenCount = 0, pmLoadingEarlier = false;
 var CJK_TEXT_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\u3040-\u30ff\uac00-\ud7af]/;
 

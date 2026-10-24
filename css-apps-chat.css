@@ -2527,12 +2527,13 @@ html[data-theme="dark"] #chatApp.has-pinned-chats.is-chats-tab-active::before{ b
 .pm-view.session-has-wallpaper::before{
   content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:var(--pm-session-wallpaper); background-position:center; background-size:cover; background-repeat:no-repeat;
-  opacity:1; filter:brightness(1);
+  opacity:1;
 }
 /* 日间保持壁纸原图亮度；夜间轻微压暗，避免背景抢过消息内容。 */
-html[data-theme="dark"] .pm-view.session-has-wallpaper::before{ filter:brightness(0.70); }
+/* 用半透明黑色叠层代替整屏 filter:brightness()，视觉等价但不需要每次合成时做滤镜运算。 */
+html[data-theme="dark"] .pm-view.session-has-wallpaper::before{ background-image:linear-gradient(rgba(0,0,0,.30),rgba(0,0,0,.30)), var(--pm-session-wallpaper); }
 @media (prefers-color-scheme: dark){
-  html:not([data-theme]) .pm-view.session-has-wallpaper::before{ filter:brightness(0.70); }
+  html:not([data-theme]) .pm-view.session-has-wallpaper::before{ background-image:linear-gradient(rgba(0,0,0,.30),rgba(0,0,0,.30)), var(--pm-session-wallpaper); }
 }
 .pm-view.session-has-wallpaper .pm-shell{ z-index:1; background:transparent; }
 /* 自定义聊天壁纸下，位置卡片与文件卡片保持不透明底色，避免壁纸透过半透明卡片。 */
@@ -2649,3 +2650,11 @@ html[data-theme="dark"] .pm-chat-settings-shell{ --bg:var(--bg-pure); }
 
 .pm-chat-settings-avatar-clear-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:7px; }
 .pm-chat-settings-avatar-clear-row button{ min-height:28px; color:var(--fg-faint); font-size:calc(10px * var(--island-font-size-scale)); text-decoration:underline; text-underline-offset:3px; }
+
+
+/* 发出去的消息的引用框：始终使用不透明底色，不受聊天背景图（及整体透明度）影响。 */
+.chat-message--sent .pm-bubble-quote{ background:#efefef; opacity:1; }
+html[data-theme="dark"] .chat-message--sent .pm-bubble-quote{ background:#1d1d1d; border:1px solid #272727; opacity:1; }
+@media (prefers-color-scheme: dark){
+  html:not([data-theme]) .chat-message--sent .pm-bubble-quote{ background:#1d1d1d; border:1px solid #272727; opacity:1; }
+}

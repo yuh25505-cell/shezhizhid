@@ -61,7 +61,7 @@ function applySessionWallpaper(name){
   var settings = getSessionChatSettings(name || currentName, false);
   if (settings.wallpaper) {
     view.classList.add('session-has-wallpaper');
-    view.style.setProperty('--pm-session-wallpaper', 'url("' + String(settings.wallpaper).replace(/["\\]/g, '') + '")');
+    view.style.setProperty('--pm-session-wallpaper', 'url("' + cachedImageSrc(settings.wallpaper).replace(/["\\]/g, '') + '")');
   } else {
     view.classList.remove('session-has-wallpaper');
     view.style.removeProperty('--pm-session-wallpaper');
