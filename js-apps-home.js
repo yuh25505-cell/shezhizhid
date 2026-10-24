@@ -141,6 +141,53 @@ var DEFAULT_ICON_FILES = {
   '栖迟': 'icons/xichi.png'
 };
 
+/* 加载内置图标：偶发的网络失败（移动网络、刚更新 service worker 等）不再留下「问号」破图，
+ * 而是自动重试几次；仍失败就先用线条图标顶上，网络恢复 / 回到前台后再自动补载。 */
+function loadBuiltinIcon(img, src, appName){
+  var tries = 0;
+  img.__iconSrc = src;
+  img.onerror = function(){
+    if (tries < 4) {
+      tries++;
+      setTimeout(function(){
+        if (!img.isConnected) return;
+        img.src = src + (src.indexOf('?') < 0 ? '?' : '&') + 'r=' + Date.now();
+      }, 500 * tries);
+      return;
+    }
+    img.__iconFailed = true;
+    img.style.visibility = 'hidden';
+    var host = img.parentNode;
+    if (host && !host.querySelector('.flat-glyph') && FLAT_GLYPHS[appName]) {
+      var fh = document.createElement('span');
+      fh.className = 'flat-glyph';
+      fh.setAttribute('aria-hidden', 'true');
+      fh.style.cssText = 'position:absolute;inset:0;color:var(--fg,#fff);';
+      fh.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor">' + FLAT_GLYPHS[appName] + '</svg>';
+      host.style.position = 'relative';
+      host.appendChild(fh);
+    }
+  };
+  img.onload = function(){
+    img.__iconFailed = false;
+    img.style.visibility = '';
+    var host = img.parentNode;
+    var g = host && host.querySelector('.flat-glyph');
+    if (g && host.classList.contains('is-default-icon')) g.remove();
+  };
+  img.src = src;
+}
+function retryFailedHomeIcons(){
+  $$('.app-icon.is-default-icon img').forEach(function(img){
+    if (img.__iconFailed || (img.complete && img.naturalWidth === 0 && img.__iconSrc)) {
+      img.__iconFailed = false;
+      loadBuiltinIcon(img, img.__iconSrc, (img.closest('.app') && img.closest('.app').getAttribute('data-app')) || '');
+    }
+  });
+}
+window.addEventListener('online', retryFailedHomeIcons);
+document.addEventListener('visibilitychange', function(){ if (!document.hidden) retryFailedHomeIcons(); });
+
 function setAppIconVisual(iconEl, appName, imageData){
   if (!iconEl) return;
   var theme = getHomeIconTheme();
@@ -154,15 +201,34 @@ function setAppIconVisual(iconEl, appName, imageData){
   iconEl.classList.toggle('has-custom-image', !!imageData);
   iconEl.classList.toggle('is-flat', flat && !imageData);
   iconEl.classList.toggle('is-default-icon', builtin);
+  iconEl.classList.remove('is-icon-fallback');
   iconEl.innerHTML = '';
   if (builtin) {
     var dimg = document.createElement('img');
-    dimg.src = DEFAULT_ICON_FILES[appName];
+    var src = DEFAULT_ICON_FILES[appName];
+    var retried = false;
     dimg.alt = '';
+    dimg.width = 192; dimg.height = 192;
     dimg.decoding = 'async';
     dimg.draggable = false;
     dimg.setAttribute('aria-hidden', 'true');
+    /* 加载成功前图片保持透明，不会露出浏览器的「破图」占位；失败时先重试一次，仍失败就用符号占位。 */
+    dimg.onload = function(){ dimg.classList.add('is-loaded'); };
+    dimg.onerror = function(){
+      if (!retried) { retried = true; dimg.src = src + (src.indexOf('?') < 0 ? '?r=' : '&r=') + Date.now(); return; }
+      dimg.onerror = null;
+      iconEl.classList.add('is-icon-fallback');
+      iconEl.innerHTML = '';
+      var fb = document.createElement('span');
+      fb.className = 'flat-glyph';
+      fb.setAttribute('aria-hidden', 'true');
+      if (FLAT_GLYPHS[appName]) fb.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor">' + FLAT_GLYPHS[appName] + '</svg>';
+      else fb.textContent = String(appName || '?').charAt(0);
+      iconEl.appendChild(fb);
+    };
+    dimg.src = src;
     iconEl.appendChild(dimg);
+    if (dimg.complete && dimg.naturalWidth > 0) dimg.classList.add('is-loaded');
   } else if (imageData) {
     var img = document.createElement('img');
     img.src = imageData;
